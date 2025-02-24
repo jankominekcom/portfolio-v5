@@ -1,0 +1,61 @@
+services:
+  portfolio-sveltekit:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+
+    env_file:
+      - path: .env
+        required: true
+
+    networks:
+      - public-network
+      - portfolio-sveltekit-network
+    
+    ports:
+      - 3000:3000
+
+    labels:
+      - traefik.enable=true
+
+      - traefik.http.routers.ghost.rule=Host(`jankominek.com`) || Host(`www.jankominek.com`)
+      - traefik.http.services.ghost.loadbalancer.server.port=3000
+
+      - traefik.http.routers.ghost.entrypoints=websecure
+      - traefik.http.routers.ghost.tls.certresolver=certresolver
+
+      - traefik.http.routers.ghost.middlewares=ghost-redirect
+      - traefik.http.middlewares.ghost-redirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.ghost-redirect.redirectregex.replacement=https://$${1}
+    
+    deploy:
+      mode: global
+
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        monitor: 60s
+        max_failure_ratio: 0.3
+        order: stop-first
+
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        monitor: 60s
+        max_failure_ratio: 0.3
+        order: stop-first
+
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 512M
+
+    restart: unless-stopped

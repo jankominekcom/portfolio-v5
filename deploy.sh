@@ -1,0 +1,48 @@
+#!/bin/bash
+
+
+# Create networks and volumes
+
+echo "Creating networks and volumes..."
+
+docker network inspect portfolio-pocketbase-network > /dev/null 2>&1 || docker network create portfolio-pocketbase-network
+
+docker network inspect portfolio-nextjs-network > /dev/null 2>&1 || docker network create portfolio-nextjs-network
+
+
+docker volume inspect portfolio-pocketbase-data-volume > /dev/null 2>&1 || docker volume create portfolio-pocketbase-data-volume
+
+docker volume inspect portfolio-pocketbase-public-volume > /dev/null 2>&1 || docker volume create portfolio-pocketbase-public-volume
+
+docker volume inspect portfolio-pocketbase-hooks-volume > /dev/null 2>&1 || docker volume create portfolio-pocketbase-hooks-volume
+
+echo "Created!"
+
+
+# Deploying
+
+echo "Deploying..."
+
+docker compose \
+    -p jankominek \
+    -f docker-compose.yml \
+    -f server/docker-compose-portoflio-pocketbase.yml \
+    -f client/docker-compose-portoflio-nextjs.yml \
+    up -d
+
+echo "Deployed!"
+
+
+# Clearing old things
+
+echo "Clearing old things..."
+
+docker system prune -f
+docker container prune -f
+docker image prune -f
+docker network prune -f
+docker volume prune -f
+
+echo "Cleared!"
+
+echo "Done!"

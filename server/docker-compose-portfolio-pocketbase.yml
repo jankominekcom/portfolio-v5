@@ -1,0 +1,67 @@
+services:
+  portfolio-pocketbase:
+    image: ghcr.io/muchobien/pocketbase:latest
+    
+    volumes:
+      - portfolio-pocketbase-data-volume:/pb_data
+      - portfolio-pocketbase-public-volume:/pb_public
+      - portfolio-pocketbase-hooks-volume:/pb_hooks
+
+    env_file:
+      - path: .env
+        required: true
+
+    environment:
+      ENCRYPTION: $(openssl rand -hex 16)
+
+    networks:
+      - public-network
+      - portfolio-pocketbase-network
+
+    ports:
+      - 8090:8090
+
+    labels:
+      - traefik.enable=true
+
+      - traefik.http.routers.ghost.rule=Host(`jankominek.com`) || Host(`www.jankominek.com`) && PathPrefix(`/api`)
+      - traefik.http.services.ghost.loadbalancer.server.port=8090
+
+      - traefik.http.routers.ghost.entrypoints=websecure
+      - traefik.http.routers.ghost.tls.certresolver=certresolver
+
+      - traefik.http.routers.ghost.middlewares=ghost-redirect
+      - traefik.http.middlewares.ghost-redirect.redirectregex.regex=^https://www\.(.*)
+      - traefik.http.middlewares.ghost-redirect.redirectregex.replacement=https://$${1}
+    
+    deploy:
+      mode: global
+
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 120s
+
+      rollback_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        monitor: 60s
+        max_failure_ratio: 0.3
+        order: stop-first
+
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        monitor: 60s
+        max_failure_ratio: 0.3
+        order: stop-first
+
+      resources:
+        limits:
+          cpus: 0.5
+          memory: 512M
+
+    restart: unless-stopped
