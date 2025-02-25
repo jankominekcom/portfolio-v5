@@ -4,21 +4,23 @@ WORKDIR /app
 
 COPY package*.json .
 
-RUN npm ci
+RUN npm install
 
 COPY . .
 
 RUN npm run build
-RUN npm prune --production
 
 FROM node:18-alpine
 
 WORKDIR /app
 
 COPY --from=builder /app/build build/
-COPY --from=builder /app/node_modules node_modules/
 
 COPY package.json .
+COPY package-lock.json .
+
+RUN npm install --omit=dev
+RUN npm prune --production
 
 EXPOSE 3000
 
