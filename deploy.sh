@@ -7,7 +7,7 @@ echo "Creating networks and volumes..."
 
 docker network inspect portfolio-pocketbase-network > /dev/null 2>&1 || docker network create portfolio-pocketbase-network
 
-docker network inspect portfolio-nextjs-network > /dev/null 2>&1 || docker network create portfolio-nextjs-network
+docker network inspect portfolio-sveltekit-network > /dev/null 2>&1 || docker network create portfolio-sveltekit-network
 
 
 docker volume inspect portfolio-pocketbase-data-volume > /dev/null 2>&1 || docker volume create portfolio-pocketbase-data-volume
@@ -26,8 +26,8 @@ echo "Deploying..."
 docker compose \
     -p jankominek \
     -f docker-compose.yml \
-    -f server/docker-compose-portoflio-pocketbase.yml \
-    -f client/docker-compose-portoflio-nextjs.yml \
+    -f server/docker-compose-portfolio-pocketbase.yml \
+    -f client/docker-compose-portfolio-sveltekit.yml \
     up -d
 
 echo "Deployed!"
