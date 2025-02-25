@@ -1,8 +1,7 @@
 services:
   portfolio-sveltekit:
     build:
-      context: .
-      dockerfile: ./Dockerfile
+      context: ./client
 
     env_file:
       - path: .env
