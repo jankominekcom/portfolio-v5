@@ -5,6 +5,8 @@
 
 echo "Creating networks and volumes..."
 
+docker network inspect public-network > /dev/null 2>&1 || docker network create public-network
+
 docker network inspect portfolio-pocketbase-network > /dev/null 2>&1 || docker network create portfolio-pocketbase-network
 
 docker network inspect portfolio-sveltekit-network > /dev/null 2>&1 || docker network create portfolio-sveltekit-network

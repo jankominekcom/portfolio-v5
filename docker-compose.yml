@@ -4,6 +4,11 @@
 # GLOBALLY KNOWN NETWORKS
 
 networks:
+  # Traefik network
+  public-network:
+    name: public-network
+    external: true
+
   # Portfolio Pocketbase network
   # docker-compose-portfolio-pocketbase.yml
   # Ports:
