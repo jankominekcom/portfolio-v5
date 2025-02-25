@@ -17,7 +17,6 @@ WORKDIR /app
 COPY --from=builder /app/build build/
 
 COPY package.json .
-COPY package-lock.json .
 
 RUN npm install --omit=dev
 RUN npm prune --production
