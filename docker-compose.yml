@@ -15,6 +15,7 @@ networks:
   #   - 8090:8090
   portfolio-pocketbase-network:
     name: portfolio-pocketbase-network
+    external: true
     driver: bridge
 
   # Portfolio SvelteKit network
@@ -23,6 +24,7 @@ networks:
   #   - 3000:3000
   portfolio-sveltekit-network:
     name: portfolio-sveltekit-network
+    external: true
     driver: bridge
 
 # GLOBALLY KNOWN NETWORKS
@@ -39,12 +41,15 @@ volumes:
   #   - portfolio-pocketbase-data-volume:/pb_data
   portfolio-pocketbase-data-volume:
     name: portfolio-pocketbase-data-volume
+    external: true
     
   portfolio-pocketbase-public-volume:
     name: portfolio-pocketbase-public-volume
+    external: true
     
   portfolio-pocketbase-hooks-volume:
     name: portfolio-pocketbase-hooks-volume
+    external: true
 
 # GLOBALLY KNOWN VOLUMES
 # --------
