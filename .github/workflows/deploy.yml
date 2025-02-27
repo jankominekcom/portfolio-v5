@@ -10,28 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
+      - name: Checkout
+        uses: actions/checkout@v4
 
-      - name: Copy repository to remote server
-        uses: appleboy/scp-action@v0.1.7
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
         with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          rm: true
-          source: "."
-          target: "/${{ secrets.SSH_USERNAME }}/portfolio-v5"
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_TOKEN }}
 
-      - name: Execute remote SSH deploy script
-        uses: appleboy/ssh-action@v1.2.0
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          username: ${{ secrets.SSH_USERNAME }}
-          key: ${{ secrets.SSH_PRIVATE_KEY }}
-          port: ${{ secrets.SSH_PORT }}
-          script: |
-            cd /${{ secrets.SSH_USERNAME }}/portfolio-v5
-            cp /${{ secrets.SSH_USERNAME }}/.env /${{ secrets.SSH_USERNAME }}/portfolio-v5/.env
-            bash /${{ secrets.SSH_USERNAME }}/portfolio-v5/deploy.sh
+      - name: Build & Push Image to Github Container Registry
+        run: |
+          docker build ./client --tag ghcr.io/jankominekcom/portfolio-client:latest
+          docker push ghcr.io/jankominekcom/portfolio-client:latest
